@@ -32,13 +32,13 @@ const crearUsuario = async(req,res = response)=>{
         // Crear en BD
         await dbUser.save();
         //Generar rta exitosa
+
         return res.status(201).json({
             ok: true,
             uid: dbUser.id,
             name,
             email,
             token
-
         })
     } catch (error) {
         return res.status(500).json({
@@ -78,8 +78,8 @@ const loginUsurario = async (req,res = response)=>{
             uid: dbUser.id,
             msg:'Login existoso',
             name: dbUser.name,
-            token
-
+            token,
+            email
         })
     } catch (error) {
         return res.status(500).json({
@@ -89,22 +89,21 @@ const loginUsurario = async (req,res = response)=>{
     }
 };
 
-const revaldiarToken = async(req,res = response)=>{
+const revalidarToken = async(req,res = response)=>{
     const {uid,name} = req;
     const token = await generarJWT(uid, name);
-    //const dbUser = await Usuario.findOne({id:uid});
-    //dbUser.password = token;
-
+    const dbUser = await Usuario.findById({_id:uid}); //Para traer el email
     return res.json({
          ok: true,
         uid,
         name,
-        token
+        token,
+        email : dbUser.email
     })
 }
 
 module.exports = {
     crearUsuario,
     loginUsurario,
-    revaldiarToken
+    revalidarToken
 }
